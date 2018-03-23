@@ -1,4 +1,4 @@
-train_data/*
-word_embeds/*
-__pycache__/*
+/train_data/*
+/word_embeds/*
+/__pycache__/*
 
