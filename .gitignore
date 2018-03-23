@@ -1,0 +1,4 @@
+train_data/*
+word_embeds/*
+__pycache__/*
+
