@@ -125,6 +125,7 @@ class CNNClassifier(nn.Module):
         self.drop_emb = nn.Dropout(dropout)
         self.a_e = kwargs.get("aspect_embeddings")
         #  end of inputs.
+        self.linear2 = nn.Linear(in_features=300, out_features=15)
         self.noise_emb = GaussianNoise(noise_emb)
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
         self.init_embeddings(embeddings, trainable_emb)
@@ -136,18 +137,18 @@ class CNNClassifier(nn.Module):
 
         inputs = self.embedding(inputs)  # we have to concatenate the aspect embedding to each of the sentence word.
         inputs = inputs.div(inputs.norm(p=2, dim=1, keepdim=True))
-#        inputs = self.noise_emb(inputs)
+        inputs = self.noise_emb(inputs)
         inputs = self.drop_emb(inputs)
-        to_concate = torch.FloatTensor(inputs.size())
+        to_concate = torch.FloatTensor(inputs.size()).cuda()
         if aspects:
             aspect_vector = []
             for aspect in aspects:
                 aspect_vector.append(self.a_e[aspect].unsqueeze(1).t())
             for index, batch, a_v in zip(list(range(len(to_concate))), to_concate, aspect_vector):
                 for row in range(len(batch)):
-                    to_concate[index][row] = a_v
-            to_concate = nn.Linear(in_features=300, out_features=15)(Variable(to_concate))
-            inputs = torch.cat((inputs, to_concate.cuda()), 2)
+                    to_concate[index][row] = a_v.cuda()
+            to_concate = self.linear2(Variable(to_concate))
+            inputs = torch.cat((inputs, to_concate), 2).cuda()
         inputs = inputs.unsqueeze(1)
         inputs = [F.relu(conv(inputs)).squeeze(3) for conv in self.convs]  # [(N,Co,W), ...]*len(Ks)
         inputs = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in inputs]  # [(N,Co), ...]*len(Ks)
