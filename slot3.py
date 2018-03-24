@@ -16,7 +16,7 @@ EPOCHS = 13
 vec_size = 300
 datasets = "laptop"
 default_embed_path = "word_embeds/amazon%s.txt" % vec_size
-default_train_path = "train_data/reviews_Cell_Phones_and_Accessories_5.json.gz"
+default_train_path = "train_data/reviews_Electronics_5.json.gz"
 
 word2idx, idx2word, embeddings = load_word_vectors(default_embed_path, vec_size)
 logging = set_logger("slot3.csv")
@@ -25,13 +25,13 @@ logging.debug("Epoch,Train acuracy, train f1, train loss, test accuracy, test f1
 
 sentences = MySentences(default_train_path)
 train_sentences, emotion_for_sentence, all_categories_train = [], [], []
-for index, sentence in enumerate(sentences):
+for index, sentence in enumerate(sentences, 1):
     print("{} sentences".format(index))
     ts, efs, act = sentence
     train_sentences.append(ts)
     emotion_for_sentence.append(efs)
     all_categories_train.append(act)
-    if index == 2000:
+    if index == 100:
         break
 print(1)
 
@@ -39,7 +39,7 @@ import pickle
 with open('dict.pickle', 'rb') as handle:
     unserialized_data = pickle.load(handle)
 a_e = unserialized_data
-a_e["OTHER"] = sum(a_e.values())/len(a_e) #mean of all vectors
+a_e["OTHER"] = sum(a_e.values())/len(a_e) # mean of all vectors
 print(2)
 t_return, v_return = train_validation_split(0.3, train_sentences, emotion_for_sentence,
                                             all_categories_train)
