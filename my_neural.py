@@ -136,7 +136,7 @@ class CNNClassifier(nn.Module):
     def forward(self, inputs, aspects=[]):
 
         inputs = self.embedding(inputs)  # we have to concatenate the aspect embedding to each of the sentence word.
-        inputs = inputs.div(inputs.norm(p=2, dim=1, keepdim=True))
+        #inputs = inputs.div(inputs.norm(p=2, dim=1, keepdim=True))
         inputs = self.noise_emb(inputs)
         inputs = self.drop_emb(inputs)
         to_concate = torch.FloatTensor(inputs.size()).cuda()
