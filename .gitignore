@@ -1,4 +1,6 @@
 /train_data/*
 /word_embeds/*
 /__pycache__/*
-
+dict.pickle
+*.csv
+*.png
