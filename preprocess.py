@@ -232,20 +232,52 @@ class SentimentDataset(Dataset):
 
 class MySentences(object):
 
-    def __init__(self, dirname):
+    def __init__(self, dirname, quota, max_sentences):
+        from math import ceil
         self.dirname = dirname
+        self.positives = ceil(max_sentences*quota[2])
+        self.negatives = ceil(max_sentences*quota[0])
+        self.neutrals = max_sentences - self.positives - self.negatives
+        print(self.positives, self.neutrals, self.negatives)
+        self.max_sentences = max_sentences
 
-    def __iter__(self):
+    def get_sentiment(self):
         import gzip
         g = gzip.open(self.dirname, "r")
+        sent_return, rating_ret, asp_return = [], [], []
+        flag = False
         for l in g:
-                sentences = [eval(l)["reviewText"]]
-                ratings = ""
-                if eval(l)["overall"] < 3:
-                        ratings = ["negative"]
-                elif eval(l)["overall"] > 3:
-                        ratings = ["positive"]
-                else:
-                        ratings = ["neutral"]
-                for sentence, rating in zip(sentences, ratings):
-                        yield sentence, rating, "OTHER"
+            sentences = [eval(l)["reviewText"]]
+            ratings = ""
+            sentiment = eval(l)["overall"]
+            if sentiment < 3:
+                ratings = ["negative"]
+            elif sentiment > 3:
+                ratings = ["positive"]
+            else:
+                ratings = ["neutral"]
+
+            for sentence, rating in zip(sentences, ratings):
+                    if rating == "positive" and self.positives != 0:
+                        sent_return.append(sentence)
+                        rating_ret.append(rating)
+                        asp_return.append("OTHER")
+                        self.positives -= 1
+                    elif rating == "negative" and self.negatives != 0:
+                        sent_return.append(sentence)
+                        rating_ret.append(rating)
+                        asp_return.append("OTHER")
+                        self.negatives -= 1
+                    elif rating == "neutral" and self.neutrals != 0:
+                        sent_return.append(sentence)
+                        rating_ret.append(rating)
+                        asp_return.append("OTHER")
+                        self.neutrals -= 1
+                    print(self.positives, "/", self.negatives, "/", self.neutrals)
+                    if self.neutrals + self.positives + self.negatives == 0:
+                        flag = True
+                        break
+
+            if flag:
+                break
+        return sent_return, rating_ret, asp_return

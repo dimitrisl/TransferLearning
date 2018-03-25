@@ -23,36 +23,26 @@ logging = set_logger("slot3.csv")
 logging.debug("Epoch,Train acuracy, train f1, train loss, test accuracy, test f1, test Loss")
 ###############################################################################################
 
-sentences = MySentences(default_train_path)
 train_sentences, emotion_for_sentence, all_categories_train = [], [], []
-for index, sentence in enumerate(sentences, 1):
-    print("{} sentences".format(index))
-    ts, efs, act = sentence
-    train_sentences.append(ts)
-    emotion_for_sentence.append(efs)
-    all_categories_train.append(act)
-    if index == 100:
-        break
-print(1)
 
+quota = [0.4, 0.2, 0.4]
+max_sentences = 200
+sentences = MySentences(default_train_path, quota, max_sentences)
+train_sentences, emotion_for_sentence, all_categories_train = sentences.get_sentiment()
 import pickle
 with open('dict.pickle', 'rb') as handle:
     unserialized_data = pickle.load(handle)
 a_e = unserialized_data
 a_e["OTHER"] = sum(a_e.values())/len(a_e) # mean of all vectors
-print(2)
 t_return, v_return = train_validation_split(0.3, train_sentences, emotion_for_sentence,
                                             all_categories_train)
-print("split done")
 train_sentences, emotion_for_sentence, all_categories_train = t_return[0], t_return[1], t_return[2]
 validation_sentences, validation_emotion_for_sentence, all_categories_validation = v_return[0], v_return[1], v_return[2]
-print(3)
 train_set = SentimentDataset(word2idx, train_sentences,  emotion_for_sentence, all_categories_train)
 validation_set = SentimentDataset(word2idx, validation_sentences,  validation_emotion_for_sentence, all_categories_validation)
-print(4)
 loader_train = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
 loader_validation = DataLoader(validation_set, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
-print(5)
+
 _hparams = {
     "kernel_dim": 30,
     "kernel_sizes": (3, 4, 5),
