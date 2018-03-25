@@ -40,8 +40,8 @@ def train_validation_split(percentage, *aligned_lists):
     indices = list(range(len(aligned_lists[0])))
     train_indices, validation_indices = train_test_split(indices, test_size=percentage, random_state=1)
     train_return, validation_return = [], []
-    for index,category in enumerate(aligned_lists):
-        print("%s / %s"%(index, len(aligned_lists)))
+    for i,category in enumerate(aligned_lists,1):
+        print("%s / %s"%(i, len(aligned_lists)))
         train_return.append([])
         validation_return.append([])
         for index in indices:

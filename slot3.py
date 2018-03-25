@@ -26,7 +26,7 @@ logging.debug("Epoch,Train acuracy, train f1, train loss, test accuracy, test f1
 train_sentences, emotion_for_sentence, all_categories_train = [], [], []
 
 quota = [0.4, 0.2, 0.4]
-max_sentences = 200
+max_sentences = 20000
 sentences = MySentences(default_train_path, quota, max_sentences)
 train_sentences, emotion_for_sentence, all_categories_train = sentences.get_sentiment()
 import pickle
@@ -165,9 +165,8 @@ for epoch in range(1, EPOCHS + 1):
     logging.debug("{0},{1:.3f},{2:.3f},{3:.3f},{4:.3f},{5:.3f},{6:.3f}".format(epoch, acc, f1, avg_train_loss,
                                                                                        acc2, f12, avg_val_loss,
                                                                                      ))
+    torch.save(model.state_dict(), 'file%s.pt' % epoch)
 
-
-torch.save(model.state_dict(),"here.pt")
 plt.xlabel("Epochs")
 plt.ylabel("Metrics")
 epochs = list(range(1, EPOCHS+1))

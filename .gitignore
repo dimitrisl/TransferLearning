@@ -4,3 +4,4 @@
 dict.pickle
 *.csv
 *.png
+*.pt

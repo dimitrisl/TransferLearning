@@ -116,7 +116,6 @@ def cnn_eval_dataset(dataloader, model, loss_function):
     return avg_loss, (y, y_pred)
 
 
-
 def sort_cnn_batch(lengths, others, aspect):
     """
     Sort batch data and labels by length
