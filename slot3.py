@@ -12,7 +12,7 @@ import copy
 torch.manual_seed(1)
 
 BATCH_SIZE = 15
-EPOCHS = 13
+EPOCHS = 20
 vec_size = 300
 datasets = "laptop"
 default_embed_path = "word_embeds/amazon%s.txt" % vec_size
@@ -24,9 +24,8 @@ logging.debug("Epoch,Train acuracy, train f1, train loss, test accuracy, test f1
 ###############################################################################################
 
 train_sentences, emotion_for_sentence, all_categories_train = [], [], []
-
 quota = [0.4, 0.2, 0.4]
-max_sentences = 20000
+max_sentences = 50000
 sentences = MySentences(default_train_path, quota, max_sentences)
 train_sentences, emotion_for_sentence, all_categories_train = sentences.get_sentiment()
 import pickle
@@ -165,7 +164,7 @@ for epoch in range(1, EPOCHS + 1):
     logging.debug("{0},{1:.3f},{2:.3f},{3:.3f},{4:.3f},{5:.3f},{6:.3f}".format(epoch, acc, f1, avg_train_loss,
                                                                                        acc2, f12, avg_val_loss,
                                                                                      ))
-    torch.save(model.state_dict(), 'file%s.pt' % epoch)
+    torch.save(model.state_dict(), '50k_file%s.pt' % epoch)
 
 plt.xlabel("Epochs")
 plt.ylabel("Metrics")
