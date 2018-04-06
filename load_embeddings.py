@@ -57,8 +57,11 @@ def load_word_vectors(file, dim):
             embeddings = numpy.array(embeddings, dtype='float32')
 
         # write the data to a cache file
-        write_cache_word_vectors(file, (word2idx, idx2word, embeddings))
-
+        #write_cache_word_vectors(file, (word2idx, idx2word, embeddings))
+        x = torch.from_numpy(embeddings).float()
+        print("Normalize embeddings")
+        x = x.div(x.norm(p=2, dim=1, keepdim=True))
+        print("Normalizing ended")
         return word2idx, idx2word, torch.from_numpy(embeddings).float()
 
     else:
